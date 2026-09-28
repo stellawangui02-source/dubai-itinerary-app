@@ -1,0 +1,611 @@
+const localStorageKey = "dubai-trip-v1";
+
+const defaultState = {
+  trip: {
+    title: "Dubai Escape",
+    summary: "A relaxed, luxe Dubai getaway for two with dessert dunes, waterfront evenings, and a slow-burn city stay.",
+    dates: "Mar 15 – Mar 21",
+    travelerNames: "Alicia & Omar",
+    nights: 6,
+    dayCount: 7,
+    budget: 4750
+  },
+  traveler: {
+    name: "Alicia & Omar"
+  },
+  hotel: {
+    name: "The Dubai EDITION",
+    address: "Downtown Dubai, UAE",
+    room: "Deluxe Suite",
+    checkIn: "Mar 15, 15:00",
+    checkOut: "Mar 21, 12:00",
+    notes: "Pool access, breakfast included, airport pickup available"
+  },
+  flights: [
+    {
+      from: "New York (JFK)",
+      to: "Dubai (DXB)",
+      airline: "Emirates",
+      flightNo: "EK 201",
+      time: "Mar 15, 18:45",
+      status: "Booked"
+    }
+  ],
+  transfer: {
+    mode: "Private airport transfer",
+    provider: "Dubai VIP Chauffeur",
+    pickup: "DXB Terminal 3",
+    dropoff: "The Dubai EDITION",
+    status: "Booked"
+  },
+  documents: [
+    { name: "Passport scans", done: true },
+    { name: "Visa approval email", done: true },
+    { name: "Hotel confirmation", done: true },
+    { name: "Travel insurance", done: false },
+    { name: "Arrival transfer details", done: false }
+  ],
+  bookingLinks: [
+    { label: "Hotel booking", url: "https://example.com/hotel" },
+    { label: "Desert safari", url: "https://example.com/safari" },
+    { label: "Burj Khalifa", url: "https://example.com/burj" },
+    { label: "Dinner reservation", url: "https://example.com/dinner" }
+  ],
+  budget: [
+    { name: "Flights", amount: 1800 },
+    { name: "Hotel", amount: 1450 },
+    { name: "Tours & transfers", amount: 620 },
+    { name: "Dining", amount: 540 },
+    { name: "Shopping & misc", amount: 340 }
+  ],
+  days: [
+    {
+      id: 1,
+      label: "Day 1",
+      date: "Mar 15",
+      items: [
+        {
+          time: "18:45",
+          title: "Arrive in Dubai",
+          description: "Check in, freshen up, and rest after the overnight flight.",
+          category: "flight",
+          location: "DXB Airport",
+          link: "https://example.com/",
+          status: "booked"
+        },
+        {
+          time: "20:30",
+          title: "Rooftop dinner at Jumeirah",
+          description: "Casual waterfront dinner and a sunset skyline first impression.",
+          category: "food",
+          location: "Jumeirah Beach",
+          link: "https://example.com/dinner",
+          status: "planned"
+        }
+      ]
+    },
+    {
+      id: 2,
+      label: "Day 2",
+      date: "Mar 16",
+      items: [
+        {
+          time: "09:30",
+          title: "Old Dubai walk",
+          description: "Explore Al Fahidi, coffee stops, traditional souks, and a slow city morning.",
+          category: "tour",
+          location: "Al Fahidi",
+          link: "https://example.com/old-dubai",
+          status: "planned"
+        },
+        {
+          time: "19:30",
+          title: "Burj Khalifa sunset",
+          description: "Golden hour skyline views from the observation deck.",
+          category: "tour",
+          location: "Downtown",
+          link: "https://example.com/burj",
+          status: "booked"
+        }
+      ]
+    },
+    {
+      id: 3,
+      label: "Day 3",
+      date: "Mar 17",
+      items: [
+        {
+          time: "08:30",
+          title: "Desert safari",
+          description: "Dune drive, sandboarding, and a Bedouin-style dinner under the stars.",
+          category: "tour",
+          location: "Dubai Desert Conservation Reserve",
+          link: "https://example.com/safari",
+          status: "booked"
+        }
+      ]
+    },
+    {
+      id: 4,
+      label: "Day 4",
+      date: "Mar 18",
+      items: [
+        {
+          time: "11:00",
+          title: "Pool day + slow lunch",
+          description: "Relax by the pool and enjoy a lazy afternoon in the city.",
+          category: "hotel",
+          location: "The Dubai EDITION",
+          link: "#",
+          status: "planned"
+        },
+        {
+          time: "18:30",
+          title: "Dubai Marina evening stroll",
+          description: "Walk the promenade, choose a waterfront dinner, and unwind.",
+          category: "food",
+          location: "Dubai Marina",
+          link: "https://example.com/marina",
+          status: "planned"
+        }
+      ]
+    },
+    {
+      id: 5,
+      label: "Day 5",
+      date: "Mar 19",
+      items: [
+        {
+          time: "09:00",
+          title: "Palm Jumeirah & beach club",
+          description: "Take in the iconic Palm skyline and spend the day by the water.",
+          category: "tour",
+          location: "Palm Jumeirah",
+          link: "https://example.com/palm",
+          status: "planned"
+        }
+      ]
+    },
+    {
+      id: 6,
+      label: "Day 6",
+      date: "Mar 20",
+      items: [
+        {
+          time: "10:00",
+          title: "Luxury shopping & souk browse",
+          description: "Meander across DIFC, Dubai Mall, and local markets for final souvenirs.",
+          category: "tour",
+          location: "Downtown & DIFC",
+          link: "https://example.com/shopping",
+          status: "planned"
+        },
+        {
+          time: "20:00",
+          title: "Final romantic dinner",
+          description: "Celebrate the trip with a skyline-view meal and dessert.",
+          category: "food",
+          location: "Marina or Downtown",
+          link: "https://example.com/final-dinner",
+          status: "booked"
+        }
+      ]
+    },
+    {
+      id: 7,
+      label: "Day 7",
+      date: "Mar 21",
+      items: [
+        {
+          time: "08:30",
+          title: "Departure morning",
+          description: "Check out and transfer to the airport with luggage in hand.",
+          category: "transfer",
+          location: "The Dubai EDITION → DXB",
+          link: "#",
+          status: "planned"
+        }
+      ]
+    }
+  ],
+  shareToken: "dubai-escape-2026"
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(localStorageKey);
+    return saved ? JSON.parse(saved) : defaultState;
+  } catch (error) {
+    console.error("Failed to load state", error);
+    return defaultState;
+  }
+}
+
+function saveState(state) {
+  try {
+    localStorage.setItem(localStorageKey, JSON.stringify(state));
+  } catch (error) {
+    console.error("Failed to save state", error);
+  }
+}
+
+function currency(n) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD"
+  }).format(n);
+}
+
+function isGuestMode() {
+  const path = window.location.pathname || "/";
+  return path.startsWith("/i/") || new URLSearchParams(window.location.search).get("mode") === "guest";
+}
+
+function getGuestUrl() {
+  const state = loadState();
+  const token = state.shareToken || "dubai-escape";
+  const base = window.location.origin || "https://example.com";
+  return `${base}/i/${token}`;
+}
+
+function getStatusClass(status) {
+  const map = {
+    booked: "status-booked",
+    planned: "status-planned",
+    done: "status-done",
+    visa: "status-visa"
+  };
+  return map[status] || "status-planned";
+}
+
+function getCategoryClass(category) {
+  const map = {
+    flight: "category-flight",
+    hotel: "category-hotel",
+    tour: "category-tour",
+    food: "category-food",
+    transfer: "category-transfer",
+    visa: "category-flight"
+  };
+  return map[category] || "category-flight";
+}
+
+function renderHeader(state) {
+  const trip = state.trip;
+  document.getElementById("tripTitle").textContent = trip.title;
+  document.getElementById("tripSummary").textContent = trip.summary;
+  document.getElementById("tripDates").textContent = trip.dates;
+  document.getElementById("travelerNames").textContent = trip.travelerNames;
+  document.getElementById("stayNights").textContent = trip.nights;
+  document.getElementById("dayCount").textContent = trip.dayCount;
+  document.getElementById("budgetTotal").textContent = currency(trip.budget);
+}
+
+function renderDayTabs(state) {
+  const tabs = document.getElementById("dayTabs");
+  tabs.innerHTML = "";
+  state.days.forEach((day, index) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "day-tab" + (index === 0 ? " active" : "");
+    btn.textContent = `${day.label} · ${day.date}`;
+    btn.addEventListener("click", () => {
+      setCurrentDay(index);
+    });
+    tabs.appendChild(btn);
+  });
+}
+
+function currentDayIndex() {
+  const stored = sessionStorage.getItem("currentDayIndex");
+  return stored ? Number(stored) : 0;
+}
+
+function setCurrentDay(index) {
+  sessionStorage.setItem("currentDayIndex", String(index));
+  render();
+}
+
+function renderTimeline(state) {
+  const timeline = document.getElementById("timeline");
+  const dayIndex = currentDayIndex();
+  const selectedDay = state.days[dayIndex] || state.days[0];
+  const items = selectedDay.items || [];
+
+  timeline.innerHTML = "";
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "timeline-card";
+
+  items.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "timeline-item";
+
+    const time = document.createElement("span");
+    time.className = "time";
+    time.textContent = item.time;
+
+    const title = document.createElement("h3");
+    title.className = "timeline-title";
+    title.textContent = item.title;
+
+    const meta = document.createElement("div");
+    meta.className = "timeline-meta";
+    meta.textContent = `${item.location} • ${item.category}`;
+
+    const desc = document.createElement("div");
+    desc.className = "timeline-desc";
+    desc.textContent = item.description;
+
+    const actions = document.createElement("div");
+    actions.className = "timeline-actions";
+
+    const status = document.createElement("span");
+    status.className = "tag " + getStatusClass(item.status);
+    status.textContent = item.status;
+
+    const category = document.createElement("span");
+    category.className = "tag " + getCategoryClass(item.category);
+    category.textContent = item.category;
+
+    actions.appendChild(status);
+    actions.appendChild(category);
+
+    if (item.link && item.link !== "#") {
+      const link = document.createElement("a");
+      link.href = item.link;
+      link.target = "_blank";
+      link.rel = "noreferrer noopener";
+      link.className = "tag";
+      link.style.background = "#eef6ff";
+      link.style.color = "#2a5ac7";
+      link.style.borderColor = "#dfe9ff";
+      link.textContent = "Open link";
+      actions.appendChild(link);
+    }
+
+    card.appendChild(time);
+    card.appendChild(title);
+    card.appendChild(meta);
+    card.appendChild(desc);
+    card.appendChild(actions);
+
+    wrapper.appendChild(card);
+  });
+
+  timeline.appendChild(wrapper);
+}
+
+function renderFlightCard(state) {
+  const flightCard = document.getElementById("flightCard");
+  flightCard.innerHTML = "";
+
+  state.flights.forEach(flight => {
+    const row = document.createElement("div");
+    row.className = "mini";
+    row.innerHTML = `
+      <div>
+        <strong>${flight.airline} ${flight.flightNo}</strong><br />
+        <span>${flight.from} → ${flight.to}</span>
+      </div>
+      <div style="text-align:right;">
+        <strong>${flight.time}</strong><br />
+        <span>${flight.status}</span>
+      </div>
+    `;
+    flightCard.appendChild(row);
+  });
+}
+
+function renderHotelCard(state) {
+  const card = document.getElementById("hotelCard");
+  const hotel = state.hotel;
+  card.innerHTML = `
+    <div class="mini">
+      <div>
+        <strong>${hotel.name}</strong><br />
+        <span>${hotel.address}</span>
+      </div>
+      <div style="text-align:right;">
+        <strong>${hotel.room}</strong><br />
+        <span>${hotel.checkIn}</span>
+      </div>
+    </div>
+    <div class="mini">
+      <div>
+        <strong>Check-out</strong><br />
+        <span>${hotel.checkOut}</span>
+      </div>
+      <div style="text-align:right;">
+        <strong>Notes</strong><br />
+        <span>${hotel.notes}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderTransferCard(state) {
+  const card = document.getElementById("transferCard");
+  const transfer = state.transfer;
+  card.innerHTML = `
+    <div class="mini">
+      <div>
+        <strong>${transfer.mode}</strong><br />
+        <span>${transfer.provider}</span>
+      </div>
+      <div style="text-align:right;">
+        <strong>${transfer.status}</strong><br />
+        <span>Private pickup</span>
+      </div>
+    </div>
+    <div class="mini">
+      <div>
+        <strong>Pickup</strong><br />
+        <span>${transfer.pickup}</span>
+      </div>
+      <div style="text-align:right;">
+        <strong>Dropoff</strong><br />
+        <span>${transfer.dropoff}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderDocuments(state) {
+  const list = document.getElementById("documentList");
+  list.innerHTML = "";
+  state.documents.forEach(doc => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div class="left">
+        <span class="check ${doc.done ? "" : "pending"}">${doc.done ? "✓" : "•"}</span>
+        <span>${doc.name}</span>
+      </div>
+      <span class="tag ${doc.done ? "status-done" : "status-planned"}">${doc.done ? "Ready" : "Pending"}</span>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function renderBookingList(state) {
+  const list = document.getElementById("bookingList");
+  list.innerHTML = "";
+  state.bookingLinks.forEach(link => {
+    const item = document.createElement("a");
+    item.href = link.url;
+    item.target = "_blank";
+    item.rel = "noreferrer noopener";
+    item.className = "booking-link";
+    item.innerHTML = `
+      <div>${link.label}</div>
+      <span class="link-pill">Open</span>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function renderBudget(state) {
+  const budgetList = document.getElementById("budgetList");
+  budgetList.innerHTML = "";
+  state.budget.forEach(item => {
+    const row = document.createElement("li");
+    row.className = "budget-row";
+    row.innerHTML = `
+      <div>
+        <strong>${item.name}</strong>
+      </div>
+      <div>
+        <span>${currency(item.amount)}</span>
+      </div>
+    `;
+    budgetList.appendChild(row);
+  });
+
+  const total = state.budget.reduce((sum, item) => sum + item.amount, 0);
+  document.getElementById("budgetAmount").textContent = currency(total);
+}
+
+function renderAdmin(state) {
+  const mode = isGuestMode();
+  const adminPanel = document.getElementById("adminPanel");
+  const guestNote = document.getElementById("guestNote");
+  const modeLabel = document.getElementById("modeLabel");
+  const daySelect = document.getElementById("itemDay");
+
+  if (mode) {
+    adminPanel.classList.remove("visible");
+    guestNote.classList.remove("hidden");
+    modeLabel.textContent = "Guest";
+    document.getElementById("shareHint").textContent = "Public guest view";
+  } else {
+    adminPanel.classList.add("visible");
+    guestNote.classList.add("hidden");
+    modeLabel.textContent = "Admin";
+    document.getElementById("shareHint").textContent = "Share-ready";
+  }
+
+  daySelect.innerHTML = "";
+  state.days.forEach(day => {
+    const option = document.createElement("option");
+    option.value = String(day.id);
+    option.textContent = `${day.label} · ${day.date}`;
+    daySelect.appendChild(option);
+  });
+}
+
+function addItemToState() {
+  const state = loadState();
+  const dayId = Number(document.getElementById("itemDay").value);
+  const day = state.days.find(d => d.id === dayId);
+
+  const newItem = {
+    time: document.getElementById("itemTime").value || "09:00",
+    title: document.getElementById("itemTitle").value || "New itinerary item",
+    description: document.getElementById("itemDescription").value || "Updated plan item.",
+    category: document.getElementById("itemCategory").value,
+    location: document.getElementById("itemLocation").value || "Dubai",
+    link: document.getElementById("itemLink").value || "#",
+    status: document.getElementById("itemStatus").value || "planned"
+  };
+
+  if (!day) return;
+  day.items.push(newItem);
+  saveState(state);
+
+  // Clear form
+  document.getElementById("itemTime").value = "09:00";
+  document.getElementById("itemTitle").value = "";
+  document.getElementById("itemDescription").value = "";
+  document.getElementById("itemLocation").value = "";
+  document.getElementById("itemLink").value = "";
+
+  render();
+}
+
+function generateShareLink() {
+  const state = loadState();
+  const token = state.shareToken || `dubai-${Date.now().toString(36)}`;
+  state.shareToken = token;
+  saveState(state);
+
+  const url = `${window.location.origin}/i/${token}`;
+  navigator.clipboard?.writeText(url).catch(() => {});
+  alert("Guest link copied to clipboard:\n" + url);
+}
+
+function initGuestRoute() {
+  if (window.location.pathname.startsWith("/i/")) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("mode") !== "admin") {
+      // Guest view is read-only and no admin controls should appear
+      return;
+    }
+  }
+}
+
+let state = loadState();
+
+function render() {
+  state = loadState();
+  renderHeader(state);
+  renderDayTabs(state);
+  renderTimeline(state);
+  renderFlightCard(state);
+  renderHotelCard(state);
+  renderTransferCard(state);
+  renderDocuments(state);
+  renderBookingList(state);
+  renderBudget(state);
+  renderAdmin(state);
+
+  const guestMode = isGuestMode();
+  document.getElementById("modeLabel").textContent = guestMode ? "Guest" : "Admin";
+}
+
+// Event listeners
+document.getElementById("saveItemBtn").addEventListener("click", addItemToState);
+document.getElementById("generateLinkBtn").addEventListener("click", generateShareLink);
+
+// Initial render
+render();
+initGuestRoute();
