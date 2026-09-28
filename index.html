@@ -1,611 +1,175 @@
-const localStorageKey = "dubai-trip-v1";
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dubai Couple Itinerary</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <div class="shell">
+        <header class="topbar">
+          <div class="brand">
+            <div class="logo">✈</div>
+            Dubai
+          </div>
+          <div class="mode-toggle">
+            <span class="dot"></span>
+            <span id="modeLabel">Admin</span>
+          </div>
+        </header>
 
-const defaultState = {
-  trip: {
-    title: "Dubai Escape",
-    summary: "A relaxed, luxe Dubai getaway for two with dessert dunes, waterfront evenings, and a slow-burn city stay.",
-    dates: "Mar 15 – Mar 21",
-    travelerNames: "Alicia & Omar",
-    nights: 6,
-    dayCount: 7,
-    budget: 4750
-  },
-  traveler: {
-    name: "Alicia & Omar"
-  },
-  hotel: {
-    name: "The Dubai EDITION",
-    address: "Downtown Dubai, UAE",
-    room: "Deluxe Suite",
-    checkIn: "Mar 15, 15:00",
-    checkOut: "Mar 21, 12:00",
-    notes: "Pool access, breakfast included, airport pickup available"
-  },
-  flights: [
-    {
-      from: "New York (JFK)",
-      to: "Dubai (DXB)",
-      airline: "Emirates",
-      flightNo: "EK 201",
-      time: "Mar 15, 18:45",
-      status: "Booked"
-    }
-  ],
-  transfer: {
-    mode: "Private airport transfer",
-    provider: "Dubai VIP Chauffeur",
-    pickup: "DXB Terminal 3",
-    dropoff: "The Dubai EDITION",
-    status: "Booked"
-  },
-  documents: [
-    { name: "Passport scans", done: true },
-    { name: "Visa approval email", done: true },
-    { name: "Hotel confirmation", done: true },
-    { name: "Travel insurance", done: false },
-    { name: "Arrival transfer details", done: false }
-  ],
-  bookingLinks: [
-    { label: "Hotel booking", url: "https://example.com/hotel" },
-    { label: "Desert safari", url: "https://example.com/safari" },
-    { label: "Burj Khalifa", url: "https://example.com/burj" },
-    { label: "Dinner reservation", url: "https://example.com/dinner" }
-  ],
-  budget: [
-    { name: "Flights", amount: 1800 },
-    { name: "Hotel", amount: 1450 },
-    { name: "Tours & transfers", amount: 620 },
-    { name: "Dining", amount: 540 },
-    { name: "Shopping & misc", amount: 340 }
-  ],
-  days: [
-    {
-      id: 1,
-      label: "Day 1",
-      date: "Mar 15",
-      items: [
-        {
-          time: "18:45",
-          title: "Arrive in Dubai",
-          description: "Check in, freshen up, and rest after the overnight flight.",
-          category: "flight",
-          location: "DXB Airport",
-          link: "https://example.com/",
-          status: "booked"
-        },
-        {
-          time: "20:30",
-          title: "Rooftop dinner at Jumeirah",
-          description: "Casual waterfront dinner and a sunset skyline first impression.",
-          category: "food",
-          location: "Jumeirah Beach",
-          link: "https://example.com/dinner",
-          status: "planned"
-        }
-      ]
-    },
-    {
-      id: 2,
-      label: "Day 2",
-      date: "Mar 16",
-      items: [
-        {
-          time: "09:30",
-          title: "Old Dubai walk",
-          description: "Explore Al Fahidi, coffee stops, traditional souks, and a slow city morning.",
-          category: "tour",
-          location: "Al Fahidi",
-          link: "https://example.com/old-dubai",
-          status: "planned"
-        },
-        {
-          time: "19:30",
-          title: "Burj Khalifa sunset",
-          description: "Golden hour skyline views from the observation deck.",
-          category: "tour",
-          location: "Downtown",
-          link: "https://example.com/burj",
-          status: "booked"
-        }
-      ]
-    },
-    {
-      id: 3,
-      label: "Day 3",
-      date: "Mar 17",
-      items: [
-        {
-          time: "08:30",
-          title: "Desert safari",
-          description: "Dune drive, sandboarding, and a Bedouin-style dinner under the stars.",
-          category: "tour",
-          location: "Dubai Desert Conservation Reserve",
-          link: "https://example.com/safari",
-          status: "booked"
-        }
-      ]
-    },
-    {
-      id: 4,
-      label: "Day 4",
-      date: "Mar 18",
-      items: [
-        {
-          time: "11:00",
-          title: "Pool day + slow lunch",
-          description: "Relax by the pool and enjoy a lazy afternoon in the city.",
-          category: "hotel",
-          location: "The Dubai EDITION",
-          link: "#",
-          status: "planned"
-        },
-        {
-          time: "18:30",
-          title: "Dubai Marina evening stroll",
-          description: "Walk the promenade, choose a waterfront dinner, and unwind.",
-          category: "food",
-          location: "Dubai Marina",
-          link: "https://example.com/marina",
-          status: "planned"
-        }
-      ]
-    },
-    {
-      id: 5,
-      label: "Day 5",
-      date: "Mar 19",
-      items: [
-        {
-          time: "09:00",
-          title: "Palm Jumeirah & beach club",
-          description: "Take in the iconic Palm skyline and spend the day by the water.",
-          category: "tour",
-          location: "Palm Jumeirah",
-          link: "https://example.com/palm",
-          status: "planned"
-        }
-      ]
-    },
-    {
-      id: 6,
-      label: "Day 6",
-      date: "Mar 20",
-      items: [
-        {
-          time: "10:00",
-          title: "Luxury shopping & souk browse",
-          description: "Meander across DIFC, Dubai Mall, and local markets for final souvenirs.",
-          category: "tour",
-          location: "Downtown & DIFC",
-          link: "https://example.com/shopping",
-          status: "planned"
-        },
-        {
-          time: "20:00",
-          title: "Final romantic dinner",
-          description: "Celebrate the trip with a skyline-view meal and dessert.",
-          category: "food",
-          location: "Marina or Downtown",
-          link: "https://example.com/final-dinner",
-          status: "booked"
-        }
-      ]
-    },
-    {
-      id: 7,
-      label: "Day 7",
-      date: "Mar 21",
-      items: [
-        {
-          time: "08:30",
-          title: "Departure morning",
-          description: "Check out and transfer to the airport with luggage in hand.",
-          category: "transfer",
-          location: "The Dubai EDITION → DXB",
-          link: "#",
-          status: "planned"
-        }
-      ]
-    }
-  ],
-  shareToken: "dubai-escape-2026"
-};
+        <main class="content">
+          <section class="hero">
+            <p class="eyebrow">Trip overview</p>
+            <h1 id="tripTitle">Dubai Escape</h1>
+            <div class="subhead" id="tripSummary">
+              A relaxed, luxe Dubai getaway for two with dessert dunes, waterfront evenings, and a slow-burn city stay.
+            </div>
 
-function loadState() {
-  try {
-    const saved = localStorage.getItem(localStorageKey);
-    return saved ? JSON.parse(saved) : defaultState;
-  } catch (error) {
-    console.error("Failed to load state", error);
-    return defaultState;
-  }
-}
+            <div class="hero-meta">
+              <span class="chip" id="tripDates">Mar 15 – Mar 21</span>
+              <span class="chip" id="travelerNames">Alicia & Omar</span>
+              <span class="chip">Couple trip</span>
+            </div>
 
-function saveState(state) {
-  try {
-    localStorage.setItem(localStorageKey, JSON.stringify(state));
-  } catch (error) {
-    console.error("Failed to save state", error);
-  }
-}
+            <div class="summary-grid">
+              <div class="metric">
+                <strong id="stayNights">6</strong>
+                <span>Nights</span>
+              </div>
+              <div class="metric">
+                <strong id="dayCount">7</strong>
+                <span>Days</span>
+              </div>
+              <div class="metric">
+                <strong id="budgetTotal">$4,750</strong>
+                <span>Budget</span>
+              </div>
+            </div>
+          </section>
 
-function currency(n) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
-  }).format(n);
-}
+          <section class="section">
+            <div class="section-header">
+              <h2>Plan</h2>
+              <span class="linkish" id="shareHint">Share-ready</span>
+            </div>
+            <div id="dayTabs" class="day-tabs" aria-label="Day tabs"></div>
+          </section>
 
-function isGuestMode() {
-  const path = window.location.pathname || "/";
-  return path.startsWith("/i/") || new URLSearchParams(window.location.search).get("mode") === "guest";
-}
+          <section class="section">
+            <div class="timeline" id="timeline"></div>
+          </section>
 
-function getGuestUrl() {
-  const state = loadState();
-  const token = state.shareToken || "dubai-escape";
-  const base = window.location.origin || "https://example.com";
-  return `${base}/i/${token}`;
-}
+          <section class="card-grid">
+            <div class="card">
+              <h3>Flights</h3>
+              <div class="stack" id="flightCard"></div>
+            </div>
 
-function getStatusClass(status) {
-  const map = {
-    booked: "status-booked",
-    planned: "status-planned",
-    done: "status-done",
-    visa: "status-visa"
-  };
-  return map[status] || "status-planned";
-}
+            <div class="card">
+              <h3>Hotel stay</h3>
+              <div class="stack" id="hotelCard"></div>
+            </div>
 
-function getCategoryClass(category) {
-  const map = {
-    flight: "category-flight",
-    hotel: "category-hotel",
-    tour: "category-tour",
-    food: "category-food",
-    transfer: "category-transfer",
-    visa: "category-flight"
-  };
-  return map[category] || "category-flight";
-}
+            <div class="card">
+              <h3>Airport transfer</h3>
+              <div class="stack" id="transferCard"></div>
+            </div>
 
-function renderHeader(state) {
-  const trip = state.trip;
-  document.getElementById("tripTitle").textContent = trip.title;
-  document.getElementById("tripSummary").textContent = trip.summary;
-  document.getElementById("tripDates").textContent = trip.dates;
-  document.getElementById("travelerNames").textContent = trip.travelerNames;
-  document.getElementById("stayNights").textContent = trip.nights;
-  document.getElementById("dayCount").textContent = trip.dayCount;
-  document.getElementById("budgetTotal").textContent = currency(trip.budget);
-}
+            <div class="card">
+              <h3>Visa & documents</h3>
+              <ul class="doc-list" id="documentList"></ul>
+            </div>
 
-function renderDayTabs(state) {
-  const tabs = document.getElementById("dayTabs");
-  tabs.innerHTML = "";
-  state.days.forEach((day, index) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "day-tab" + (index === 0 ? " active" : "");
-    btn.textContent = `${day.label} · ${day.date}`;
-    btn.addEventListener("click", () => {
-      setCurrentDay(index);
-    });
-    tabs.appendChild(btn);
-  });
-}
+            <div class="card">
+              <h3>Booking links</h3>
+              <div class="booking-list" id="bookingList"></div>
+            </div>
 
-function currentDayIndex() {
-  const stored = sessionStorage.getItem("currentDayIndex");
-  return stored ? Number(stored) : 0;
-}
+            <div class="card">
+              <h3>Budget</h3>
+              <ul class="budget-list" id="budgetList"></ul>
+              <div class="budget-total">
+                <strong>Total spent</strong>
+                <span class="amount" id="budgetAmount">$0</span>
+              </div>
+            </div>
+          </section>
 
-function setCurrentDay(index) {
-  sessionStorage.setItem("currentDayIndex", String(index));
-  render();
-}
+          <section class="section admin-panel" id="adminPanel">
+            <div class="section-header">
+              <h2>Admin controls</h2>
+              <span class="linkish" id="shareLinkLabel">Public guest link</span>
+            </div>
 
-function renderTimeline(state) {
-  const timeline = document.getElementById("timeline");
-  const dayIndex = currentDayIndex();
-  const selectedDay = state.days[dayIndex] || state.days[0];
-  const items = selectedDay.items || [];
+            <div class="admin-form">
+              <div class="field">
+                <label for="itemDay">Day</label>
+                <select id="itemDay"></select>
+              </div>
 
-  timeline.innerHTML = "";
+              <div class="field">
+                <label for="itemTime">Time</label>
+                <input id="itemTime" type="text" value="09:00" />
+              </div>
 
-  const wrapper = document.createElement("div");
-  wrapper.className = "timeline-card";
+              <div class="field">
+                <label for="itemTitle">Title</label>
+                <input id="itemTitle" type="text" placeholder="Burj Khalifa sunset visit" />
+              </div>
 
-  items.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "timeline-item";
+              <div class="field">
+                <label for="itemDescription">Description</label>
+                <textarea id="itemDescription" placeholder="Take the elevator to Level 148 and enjoy a sunset skyline view."></textarea>
+              </div>
 
-    const time = document.createElement("span");
-    time.className = "time";
-    time.textContent = item.time;
+              <div class="field">
+                <label for="itemCategory">Category</label>
+                <select id="itemCategory">
+                  <option value="flight">Flight</option>
+                  <option value="hotel">Hotel</option>
+                  <option value="tour">Tour</option>
+                  <option value="food">Food</option>
+                  <option value="transfer">Transfer</option>
+                  <option value="visa">Visa</option>
+                </select>
+              </div>
 
-    const title = document.createElement("h3");
-    title.className = "timeline-title";
-    title.textContent = item.title;
+              <div class="field">
+                <label for="itemLocation">Location</label>
+                <input id="itemLocation" type="text" placeholder="Downtown Dubai" />
+              </div>
 
-    const meta = document.createElement("div");
-    meta.className = "timeline-meta";
-    meta.textContent = `${item.location} • ${item.category}`;
+              <div class="field">
+                <label for="itemLink">Link</label>
+                <input id="itemLink" type="url" placeholder="https://" />
+              </div>
 
-    const desc = document.createElement("div");
-    desc.className = "timeline-desc";
-    desc.textContent = item.description;
+              <div class="field">
+                <label for="itemStatus">Status</label>
+                <select id="itemStatus">
+                  <option value="booked">Booked</option>
+                  <option value="planned">Planned</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
 
-    const actions = document.createElement("div");
-    actions.className = "timeline-actions";
+              <div class="btn-row">
+                <button class="btn primary" id="saveItemBtn" type="button">Add itinerary item</button>
+                <button class="btn secondary" id="generateLinkBtn" type="button">Generate guest link</button>
+              </div>
+            </div>
+          </section>
 
-    const status = document.createElement("span");
-    status.className = "tag " + getStatusClass(item.status);
-    status.textContent = item.status;
-
-    const category = document.createElement("span");
-    category.className = "tag " + getCategoryClass(item.category);
-    category.textContent = item.category;
-
-    actions.appendChild(status);
-    actions.appendChild(category);
-
-    if (item.link && item.link !== "#") {
-      const link = document.createElement("a");
-      link.href = item.link;
-      link.target = "_blank";
-      link.rel = "noreferrer noopener";
-      link.className = "tag";
-      link.style.background = "#eef6ff";
-      link.style.color = "#2a5ac7";
-      link.style.borderColor = "#dfe9ff";
-      link.textContent = "Open link";
-      actions.appendChild(link);
-    }
-
-    card.appendChild(time);
-    card.appendChild(title);
-    card.appendChild(meta);
-    card.appendChild(desc);
-    card.appendChild(actions);
-
-    wrapper.appendChild(card);
-  });
-
-  timeline.appendChild(wrapper);
-}
-
-function renderFlightCard(state) {
-  const flightCard = document.getElementById("flightCard");
-  flightCard.innerHTML = "";
-
-  state.flights.forEach(flight => {
-    const row = document.createElement("div");
-    row.className = "mini";
-    row.innerHTML = `
-      <div>
-        <strong>${flight.airline} ${flight.flightNo}</strong><br />
-        <span>${flight.from} → ${flight.to}</span>
-      </div>
-      <div style="text-align:right;">
-        <strong>${flight.time}</strong><br />
-        <span>${flight.status}</span>
-      </div>
-    `;
-    flightCard.appendChild(row);
-  });
-}
-
-function renderHotelCard(state) {
-  const card = document.getElementById("hotelCard");
-  const hotel = state.hotel;
-  card.innerHTML = `
-    <div class="mini">
-      <div>
-        <strong>${hotel.name}</strong><br />
-        <span>${hotel.address}</span>
-      </div>
-      <div style="text-align:right;">
-        <strong>${hotel.room}</strong><br />
-        <span>${hotel.checkIn}</span>
+          <p class="guest-note hidden" id="guestNote">
+            Guest view only — no login required. Sharing the public link will keep the itinerary read-only.
+          </p>
+        </main>
       </div>
     </div>
-    <div class="mini">
-      <div>
-        <strong>Check-out</strong><br />
-        <span>${hotel.checkOut}</span>
-      </div>
-      <div style="text-align:right;">
-        <strong>Notes</strong><br />
-        <span>${hotel.notes}</span>
-      </div>
-    </div>
-  `;
-}
 
-function renderTransferCard(state) {
-  const card = document.getElementById("transferCard");
-  const transfer = state.transfer;
-  card.innerHTML = `
-    <div class="mini">
-      <div>
-        <strong>${transfer.mode}</strong><br />
-        <span>${transfer.provider}</span>
-      </div>
-      <div style="text-align:right;">
-        <strong>${transfer.status}</strong><br />
-        <span>Private pickup</span>
-      </div>
-    </div>
-    <div class="mini">
-      <div>
-        <strong>Pickup</strong><br />
-        <span>${transfer.pickup}</span>
-      </div>
-      <div style="text-align:right;">
-        <strong>Dropoff</strong><br />
-        <span>${transfer.dropoff}</span>
-      </div>
-    </div>
-  `;
-}
-
-function renderDocuments(state) {
-  const list = document.getElementById("documentList");
-  list.innerHTML = "";
-  state.documents.forEach(doc => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <div class="left">
-        <span class="check ${doc.done ? "" : "pending"}">${doc.done ? "✓" : "•"}</span>
-        <span>${doc.name}</span>
-      </div>
-      <span class="tag ${doc.done ? "status-done" : "status-planned"}">${doc.done ? "Ready" : "Pending"}</span>
-    `;
-    list.appendChild(li);
-  });
-}
-
-function renderBookingList(state) {
-  const list = document.getElementById("bookingList");
-  list.innerHTML = "";
-  state.bookingLinks.forEach(link => {
-    const item = document.createElement("a");
-    item.href = link.url;
-    item.target = "_blank";
-    item.rel = "noreferrer noopener";
-    item.className = "booking-link";
-    item.innerHTML = `
-      <div>${link.label}</div>
-      <span class="link-pill">Open</span>
-    `;
-    list.appendChild(item);
-  });
-}
-
-function renderBudget(state) {
-  const budgetList = document.getElementById("budgetList");
-  budgetList.innerHTML = "";
-  state.budget.forEach(item => {
-    const row = document.createElement("li");
-    row.className = "budget-row";
-    row.innerHTML = `
-      <div>
-        <strong>${item.name}</strong>
-      </div>
-      <div>
-        <span>${currency(item.amount)}</span>
-      </div>
-    `;
-    budgetList.appendChild(row);
-  });
-
-  const total = state.budget.reduce((sum, item) => sum + item.amount, 0);
-  document.getElementById("budgetAmount").textContent = currency(total);
-}
-
-function renderAdmin(state) {
-  const mode = isGuestMode();
-  const adminPanel = document.getElementById("adminPanel");
-  const guestNote = document.getElementById("guestNote");
-  const modeLabel = document.getElementById("modeLabel");
-  const daySelect = document.getElementById("itemDay");
-
-  if (mode) {
-    adminPanel.classList.remove("visible");
-    guestNote.classList.remove("hidden");
-    modeLabel.textContent = "Guest";
-    document.getElementById("shareHint").textContent = "Public guest view";
-  } else {
-    adminPanel.classList.add("visible");
-    guestNote.classList.add("hidden");
-    modeLabel.textContent = "Admin";
-    document.getElementById("shareHint").textContent = "Share-ready";
-  }
-
-  daySelect.innerHTML = "";
-  state.days.forEach(day => {
-    const option = document.createElement("option");
-    option.value = String(day.id);
-    option.textContent = `${day.label} · ${day.date}`;
-    daySelect.appendChild(option);
-  });
-}
-
-function addItemToState() {
-  const state = loadState();
-  const dayId = Number(document.getElementById("itemDay").value);
-  const day = state.days.find(d => d.id === dayId);
-
-  const newItem = {
-    time: document.getElementById("itemTime").value || "09:00",
-    title: document.getElementById("itemTitle").value || "New itinerary item",
-    description: document.getElementById("itemDescription").value || "Updated plan item.",
-    category: document.getElementById("itemCategory").value,
-    location: document.getElementById("itemLocation").value || "Dubai",
-    link: document.getElementById("itemLink").value || "#",
-    status: document.getElementById("itemStatus").value || "planned"
-  };
-
-  if (!day) return;
-  day.items.push(newItem);
-  saveState(state);
-
-  // Clear form
-  document.getElementById("itemTime").value = "09:00";
-  document.getElementById("itemTitle").value = "";
-  document.getElementById("itemDescription").value = "";
-  document.getElementById("itemLocation").value = "";
-  document.getElementById("itemLink").value = "";
-
-  render();
-}
-
-function generateShareLink() {
-  const state = loadState();
-  const token = state.shareToken || `dubai-${Date.now().toString(36)}`;
-  state.shareToken = token;
-  saveState(state);
-
-  const url = `${window.location.origin}/i/${token}`;
-  navigator.clipboard?.writeText(url).catch(() => {});
-  alert("Guest link copied to clipboard:\n" + url);
-}
-
-function initGuestRoute() {
-  if (window.location.pathname.startsWith("/i/")) {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("mode") !== "admin") {
-      // Guest view is read-only and no admin controls should appear
-      return;
-    }
-  }
-}
-
-let state = loadState();
-
-function render() {
-  state = loadState();
-  renderHeader(state);
-  renderDayTabs(state);
-  renderTimeline(state);
-  renderFlightCard(state);
-  renderHotelCard(state);
-  renderTransferCard(state);
-  renderDocuments(state);
-  renderBookingList(state);
-  renderBudget(state);
-  renderAdmin(state);
-
-  const guestMode = isGuestMode();
-  document.getElementById("modeLabel").textContent = guestMode ? "Guest" : "Admin";
-}
-
-// Event listeners
-document.getElementById("saveItemBtn").addEventListener("click", addItemToState);
-document.getElementById("generateLinkBtn").addEventListener("click", generateShareLink);
-
-// Initial render
-render();
-initGuestRoute();
+    <script src="app.js"></script>
+  </body>
+</html>
